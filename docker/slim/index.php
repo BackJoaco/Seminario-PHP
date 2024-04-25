@@ -38,7 +38,7 @@ $response->getBody()->write("Hello world");
 return $response;
 });
 
-$app->get('/localidades/listar', function(Request $request, Response $response){
+$app->get('/localidades', function(Request $request, Response $response){
     try{
         $connection=getConnection();
         $query= $connection->query('SELECT * FROM localidades');
@@ -62,7 +62,7 @@ $app->get('/localidades/listar', function(Request $request, Response $response){
     }
 });
 
-$app->post('/localidades/crear', function(Request $request, Response $response){
+$app->post('/localidades', function(Request $request, Response $response){
     $data=$request->getParsedBody();
     if(!isset($data['nombre'])){
         $response->getBody()->write(json_encode(['error'=>'El campo nombre es requerido']));
@@ -96,7 +96,7 @@ $app->post('/localidades/crear', function(Request $request, Response $response){
     }
 });
 
-$app->put('/localidades/{id}/editar', function(Request $request, Response $response, $args){
+$app->put('/localidades/{id}', function(Request $request, Response $response, $args){
     $localidad_id = $args['id'];
     $data = $request->getParsedBody();
 
@@ -109,7 +109,6 @@ $app->put('/localidades/{id}/editar', function(Request $request, Response $respo
         $conexion = getConnection();
         $nombre = $data['nombre'];
 
-        // Verificar si la localidad existe
         $sql_existencia = "SELECT * FROM localidades WHERE id = :id";
         $query_existencia = $conexion->prepare($sql_existencia);
         $query_existencia->bindParam(':id', $localidad_id);
@@ -121,7 +120,6 @@ $app->put('/localidades/{id}/editar', function(Request $request, Response $respo
             return $response->withStatus(404);
         }
 
-        // Actualizar el nombre de la localidad
         $sql_actualizacion = "UPDATE localidades SET nombre = :nombre WHERE id = :id";
         $query_actualizacion = $conexion->prepare($sql_actualizacion);
         $query_actualizacion->bindParam(':nombre', $nombre);
@@ -142,7 +140,7 @@ $app->put('/localidades/{id}/editar', function(Request $request, Response $respo
     }
 });
 
-$app->delete('/localidades/{id}/eliminar', function(Request $request, Response $response, $args){
+$app->delete('/localidades/{id}', function(Request $request, Response $response, $args){
     $localidad_id = $args['id'];
 
     try {
@@ -192,7 +190,7 @@ $app->delete('/localidades/{id}/eliminar', function(Request $request, Response $
     }
 });
 
-$app->get('/tipos_propiedad/listar', function(Request $request, Response $response){
+$app->get('/tipos_propiedad', function(Request $request, Response $response){
     try {
         $connection=getConnection();
         $query= $connection->query('SELECT * FROM tipo_propiedades');
@@ -216,7 +214,7 @@ $app->get('/tipos_propiedad/listar', function(Request $request, Response $respon
     }
 });
 
-$app->post('/tipos_propiedad/crear',function(Request $request,Response $response){
+$app->post('/tipos_propiedad',function(Request $request,Response $response){
     $data=$request->getParsedBody();
     if(!isset($data['nombre'])){
         $response->getBody()->write(json_encode(['error'=>'El campo nombre es requerido']));
@@ -252,7 +250,7 @@ $app->post('/tipos_propiedad/crear',function(Request $request,Response $response
   }
 });
 
-$app->put('/tipos_propiedad/{id}/editar', function(Request $request, Response $response, $args){
+$app->put('/tipos_propiedad/{id}', function(Request $request, Response $response, $args){
     $tipo_propiedad_id = $args['id'];
     $data = $request->getParsedBody();
 
@@ -298,7 +296,7 @@ $app->put('/tipos_propiedad/{id}/editar', function(Request $request, Response $r
     }
 });
 
-$app->delete('/tipos_propiedad/{id}/eliminar', function(Request $request, Response $response, $args){
+$app->delete('/tipos_propiedad/{id}', function(Request $request, Response $response, $args){
     $tipo_propiedad_id = $args['id'];
 
     try {
@@ -348,7 +346,7 @@ $app->delete('/tipos_propiedad/{id}/eliminar', function(Request $request, Respon
     }
 });
 
-$app->get('/inquilinos/listar', function(Request $request, Response $response){
+$app->get('/inquilinos', function(Request $request, Response $response){
     try {
         $connection=getConnection();
         $query= $connection->query('SELECT * FROM inquilinos');
@@ -372,7 +370,7 @@ $app->get('/inquilinos/listar', function(Request $request, Response $response){
     }
 });
 
-$app->get('/inquilinos/{id}/listar', function(Request $request, Response $response, $args){
+$app->get('/inquilinos/{id}', function(Request $request, Response $response, $args){
     $inquilino_id = $args['id'];
     try {
         $conexion = getConnection();
@@ -404,7 +402,7 @@ $app->get('/inquilinos/{id}/listar', function(Request $request, Response $respon
     }
 });
 
-$app->get('/inquilinos/{idInquilino}/reservas', function(Request $request, Response $response, $args){
+$app->get('/inquilinos/{idInquilino}', function(Request $request, Response $response, $args){
     $inquilino_id = $args['id'];
     try {
         $conexion = getConnection();
@@ -445,7 +443,7 @@ $app->get('/inquilinos/{idInquilino}/reservas', function(Request $request, Respo
     }
 });
 
-$app->post('/inquilinos/crear', function(Request $request, Response $response){
+$app->post('/inquilinos', function(Request $request, Response $response){
     $data=$request->getParsedBody();
     if(!(isset($data['apellido']) && isset($data['nombre']) && isset($data['documento']) && isset($data['email']) && isset($data['activo']))){
         $response->getBody()->write(json_encode(['error'=>'Todos los campos son requeridos']));
@@ -487,40 +485,46 @@ $app->post('/inquilinos/crear', function(Request $request, Response $response){
     }
 });
 
-$app->put('/inquilinos/{id}/editar', function(Request $request, Response $response, $args){
-    $inquilinos_id = $args['id'];
+$app->put('/inquilinos/{id}', function(Request $request, Response $response, $args){
+    $inquilino_id = $args['id'];
     $data = $request->getParsedBody();
 
-    // Comprobar si se proporcionaron datos para actualizar
-    if(empty($data)) {
-        $response->getBody()->write(json_encode(['error'=>'No se proporcionaron datos para actualizar']));
+    // Comprobar si se proporcionaron todos los campos
+    if(!isset($data['nombre']) && !isset($data['apellido']) && !isset($data['documento']) && !isset($data['email']) && !isset($data['activo'])) {
+        $response->getBody()->write(json_encode(['error'=>'Todos los campos son requeridos']));
         return $response->withStatus(400);
     }
 
     try {
         $conexion = getConnection();
 
-        // Construir la consulta de actualización
-        $sql_actualizacion = "UPDATE inquilinos SET ";
-        $campos_actualizados = [];
-        foreach($data as $campo => $valor) {
-            $campos_actualizados[] = "$campo = :$campo";
-        }
-        $sql_actualizacion .= implode(", ", $campos_actualizados);
-        $sql_actualizacion .= " WHERE id = :id";
+        $sql = "SELECT * FROM inquilinos WHERE id = :id";
+        $query = $conexion->prepare($sql);
+        $query->bindParam(':id', $inquilino_id);
+        $query->execute();
+        $inquilino = $query->fetch(PDO::FETCH_ASSOC);
 
-        // Preparar la consulta
-        $query_actualizacion = $conexion->prepare($sql_actualizacion);
+        if (!$inquilino){
+            $response->getBody()->write(json_encode(['error'=>'Inquilino no encontrado']));
+            return $response->withStatus(404);
+        }
+
+        $nombre = $data['nombre'];
+        $apellido = $data['apellido'];
+        $documento = $data['documento'];
+        $email = $data['email'];
+        $activo = $data['activo'];
+
+        $sql_actualizar = "UPDATE inquilinos SET nombre = :nombre, apellido = :apellido, documento = :documento, email = :email, activo = :activo WHERE id = :id";
+        $query_actualizar = $conexion->prepare($sql_actualizar);
+        $query_actualizar->bindParam(':nombre', $nombre);
+        $query_actualizar->bindParam(':apellido', $apellido);
+        $query_actualizar->bindParam(':documento', $documento);
+        $query_actualizar->bindParam(':email', $email);
+        $query_actualizar->bindParam(':activo', $activo);
+        $query_actualizar->bindParam(':id', $inquilino_id);
+        $query_actualizar->execute();
         
-        // Asignar los valores de los campos a actualizar
-        foreach($data as $campo => $valor) {
-            $query_actualizacion->bindValue(":$campo", $valor);
-        }
-        $query_actualizacion->bindParam(':id', $inquilinos_id);
-
-        // Ejecutar la consulta
-        $query_actualizacion->execute();
-
         $response->getBody()->write(json_encode(['mensaje' => 'Inquilino actualizado correctamente']));
         return $response->withStatus(200);
 
@@ -535,7 +539,7 @@ $app->put('/inquilinos/{id}/editar', function(Request $request, Response $respon
     }
 });
 
-$app->delete('/inquilinos/{id}/eliminar', function(Request $request, Response $response, $args){
+$app->delete('/inquilinos/{id}', function(Request $request, Response $response, $args){
     $inquilino_id = $args['id'];
     try {
         $conexion = getConnection();
@@ -584,7 +588,7 @@ $app->delete('/inquilinos/{id}/eliminar', function(Request $request, Response $r
     }
 });
 
-$app->get('/propiedades/listar', function(Request $request, Response $response){
+$app->get('/propiedades', function(Request $request, Response $response){
     try {
         $connection=getConnection();
         $query= $connection->query('SELECT Prop.*, Loc.nombre as Localidad, Tipo.nombre as Tipo 
@@ -609,7 +613,7 @@ $app->get('/propiedades/listar', function(Request $request, Response $response){
     }
 });
 
-$app->get('/propiedades/{id}/listar', function(Request $request, Response $response, $args){
+$app->get('/propiedades/{id}', function(Request $request, Response $response, $args){
     $propiedad_id = $args['id'];
     try {
         $conexion = getConnection();
@@ -642,7 +646,7 @@ $app->get('/propiedades/{id}/listar', function(Request $request, Response $respo
     }
 });
 
-$app->post('/propiedades/crear', function(Request $request, Response $response){
+$app->post('/propiedades', function(Request $request, Response $response){
     $data = $request->getParsedBody();
     
     // Verificar campos obligatorios
@@ -693,20 +697,30 @@ $app->post('/propiedades/crear', function(Request $request, Response $response){
     }
 });
 
-$app->put('/propiedades/{id}/editar', function(Request $request, Response $response, $args){
+$app->put('/propiedades/{id}', function(Request $request, Response $response, $args){
     $propiedades_id = $args['id'];
     $data = $request->getParsedBody();
 
     // Comprobar si se proporcionaron datos para actualizar
-    if(empty($data)) {
-        $response->getBody()->write(json_encode(['error'=>'No se proporcionaron datos para actualizar']));
+    if(!isset($data['domicilio']) && !isset($data['localidad_id']) && !isset($data['cantidad_huespedes']) && !isset($data['fecha_inicio_disponibilidad']) && !isset($data['cantidad_dias']) && !isset($data['disponible']) && !isset($data['valor_noche']) && !isset($data['tipo_propiedad_id'])) {
+        $response->getBody()->write(json_encode(['error'=>'Faltan campos requeridos']));
         return $response->withStatus(400);
     }
 
     try {
         $conexion = getConnection();
 
-        // Construir la consulta de actualización
+        $sql_existencia = "SELECT COUNT(*) AS cantidad FROM propiedades WHERE id = :id";
+        $query_existencia = $conexion->prepare($sql_existencia);
+        $query_existencia->bindParam(':id', $propiedades_id);
+        $query_existencia->execute();
+        $resultado_existencia = $query_existencia->fetch();
+
+        if ($resultado_existencia['cantidad'] == 0) {
+            $response->getBody()->write(json_encode(['error'=>'La propiedad no existe']));
+            return $response->withStatus(404);
+        }
+
         $sql_actualizacion = "UPDATE propiedades SET ";
         $campos_actualizados = [];
         foreach($data as $campo => $valor) {
@@ -714,17 +728,11 @@ $app->put('/propiedades/{id}/editar', function(Request $request, Response $respo
         }
         $sql_actualizacion .= implode(", ", $campos_actualizados);
         $sql_actualizacion .= " WHERE id = :id";
-
-        // Preparar la consulta
         $query_actualizacion = $conexion->prepare($sql_actualizacion);
-        
-        // Asignar los valores de los campos a actualizar
         foreach($data as $campo => $valor) {
             $query_actualizacion->bindValue(":$campo", $valor);
         }
         $query_actualizacion->bindParam(':id', $propiedades_id);
-
-        // Ejecutar la consulta
         $query_actualizacion->execute();
 
         $response->getBody()->write(json_encode(['mensaje' => 'Propiedad actualizada correctamente']));
@@ -741,7 +749,7 @@ $app->put('/propiedades/{id}/editar', function(Request $request, Response $respo
     }
 });
 
-$app->delete('/propiedades/{id}/eliminar', function(Request $request, Response $response, $args){
+$app->delete('/propiedades/{id}', function(Request $request, Response $response, $args){
     $propiedad_id = $args['id'];
     try {
         $conexion = getConnection();
@@ -790,7 +798,7 @@ $app->delete('/propiedades/{id}/eliminar', function(Request $request, Response $
     }
 });
 
-$app->get('/reservas/listar', function(Request $request, Response $response){
+$app->get('/reservas', function(Request $request, Response $response){
     try {
         $connection = getConnection();
         $query= $connection->query('SELECT Res.id, Res.fecha_desde, Res.cantidad_noches, Res.valor_total, Prop.domicilio as Domicilio, Inq.apellido as Apellido, Inq.nombre as Nombre
@@ -815,7 +823,7 @@ $app->get('/reservas/listar', function(Request $request, Response $response){
     }
 });
 
-$app->post('/reservas/crear', function(Request $request, Response $response){
+$app->post('/reservas', function(Request $request, Response $response){
     $data = $request->getParsedBody();
     if(!(isset($data['propiedad_id']) && isset($data['inquilino_id']) && isset($data['fecha_desde']) && isset($data['cantidad_noches']))){
         $response->getBody()->write(json_encode(['error'=>'Todos los campos son requeridos']));
@@ -888,20 +896,18 @@ $app->post('/reservas/crear', function(Request $request, Response $response){
     }
 });
 
-$app->put('/reservas/{id}/editar', function(Request $request, Response $response, $args){
+$app->put('/reservas/{id}', function(Request $request, Response $response, $args){
     $reserva_id = $args['id'];
     $data = $request->getParsedBody();
 
-    // Comprobar si se proporcionaron datos para actualizar
-    if(empty($data)) {
-        $response->getBody()->write(json_encode(['error'=>'No se proporcionaron datos para actualizar']));
+    if(!isset($data['propiedad_id']) && !isset($data['inquilino_id']) && !isset($data['fecha_desde']) && !isset($data['cantidad_noches']) && !isset($data['valor_total'])) {
+        $response->getBody()->write(json_encode(['error'=>'Todos los campos son requeridos']));
         return $response->withStatus(400);
     }
 
     try {
         $conexion = getConnection();
 
-        // Verificar si la reserva existe y obtener su fecha de inicio
         $sql_existencia = "SELECT fecha_desde FROM reservas WHERE id = :id";
         $query_existencia = $conexion->prepare($sql_existencia);
         $query_existencia->bindParam(':id', $reserva_id);
@@ -915,33 +921,30 @@ $app->put('/reservas/{id}/editar', function(Request $request, Response $response
 
         $fecha_desde = $reserva['fecha_desde'];
 
-        // Verificar si la reserva ya comenzó
-        $fecha_actual = date('Y-m-d'); // Obtener la fecha actual
+        $fecha_actual = date('Y-m-d'); 
         if ($fecha_desde <= $fecha_actual) {
             $response->getBody()->write(json_encode(['error'=>'La reserva ya comenzó, no se puede modificar']));
             return $response->withStatus(400);
         }
 
-        // Construir la consulta de actualización
-        $sql_actualizacion = "UPDATE reservas SET ";
-        $campos_actualizados = [];
-        foreach($data as $campo => $valor) {
-            $campos_actualizados[] = "$campo = :$campo";
-        }
-        $sql_actualizacion .= implode(", ", $campos_actualizados);
-        $sql_actualizacion .= " WHERE id = :id";
+        $propiedad_id = $data['propiedad_id'];
+        $sql_valor_noche = "SELECT valor_noche FROM propiedades WHERE id = :propiedad_id";
+        $query_valor_noche = $conexion->prepare($sql_valor_noche);
+        $query_valor_noche->bindParam(':propiedad_id', $propiedad_id);
+        $query_valor_noche->execute();
+        $valor_noche_propiedad = $query_valor_noche->fetchColumn();
+        $cantidad_noches = $data['cantidad_noches'];
+        $valor_total = $cantidad_noches * $valor_noche_propiedad;
 
-        // Preparar la consulta
-        $query_actualizacion = $conexion->prepare($sql_actualizacion);
-        
-        // Asignar los valores de los campos a actualizar
-        foreach($data as $campo => $valor) {
-            $query_actualizacion->bindValue(":$campo", $valor);
-        }
-        $query_actualizacion->bindParam(':id', $reserva_id);
-
-        // Ejecutar la consulta
-        $query_actualizacion->execute();
+        $sql_actualizar = "UPDATE reservas SET propiedad_id = :propiedad_id, inquilino_id = :inquilino_id, fecha_desde = :fecha_desde, cantidad_noches = :cantidad_noches, valor_total = :valor_total WHERE id = :id";
+        $query_actualizar = $conexion->prepare($sql_actualizar);
+        $query_actualizar->bindParam(':propiedad_id', $propiedad_id);
+        $query_actualizar->bindParam(':inquilino_id', $data['inquilino_id']);
+        $query_actualizar->bindParam(':fecha_desde', $data['fecha_desde']);
+        $query_actualizar->bindParam(':cantidad_noches', $cantidad_noches);
+        $query_actualizar->bindParam(':valor_total', $valor_total);
+        $query_actualizar->bindParam(':id', $reserva_id);
+        $query_actualizar->execute();
 
         $response->getBody()->write(json_encode(['mensaje' => 'Reserva actualizada correctamente']));
         return $response->withStatus(200);
