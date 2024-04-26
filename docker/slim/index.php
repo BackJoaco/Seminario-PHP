@@ -590,26 +590,62 @@ $app->delete('/inquilinos/{id}', function(Request $request, Response $response, 
 
 $app->get('/propiedades', function(Request $request, Response $response){
     try {
-        $connection=getConnection();
-        $query= $connection->query('SELECT Prop.*, Loc.nombre as Localidad, Tipo.nombre as Tipo 
-        FROM propiedades Prop, tipo_propiedades Tipo, localidades Loc
-        WHERE Prop.localidad_id = Loc.id and Prop.tipo_propiedad_id = Tipo.id');
-        $tipos = $query->fetchAll(PDO::FETCH_ASSOC);
-        $payload=json_encode([
-            'status' => 'success',
-            'code' => 200,
-            'data' => $tipos
-        ]);
-        $response->getBody()->write($payload);
-        return $response->withHeader('Content-Type','application/json');
-    } catch(PDOException $e) {
+        $conexion = getConnection();
+        $sql = "SELECT * FROM propiedades WHERE 1=1";
+
+        // Filtrar por disponibilidad
+        $disponible = $request->getQueryParam('disponible');
+        if (isset($disponible)) {
+            $sql .= " AND disponible = :disponible";
+        }
+
+        // Filtrar por localidad
+        $localidad_id = $request->getQueryParam('localidad_id');
+        if (isset($localidad_id)) {
+            $sql .= " AND localidad_id = :localidad_id";
+        }
+
+        // Filtrar por fecha de inicio
+        $fecha_inicio = $request->getQueryParam('fecha_inicio');
+        if (isset($fecha_inicio)) {
+            $sql .= " AND fecha_inicio_disponibilidad = :fecha_inicio";
+        }
+
+        // Filtrar por cantidad de huéspedes
+        $cantidad_huespedes = $request->getQueryParam('cantidad_huespedes');
+        if (isset($cantidad_huespedes)) {
+            $sql .= " AND cantidad_huespedes = :cantidad_huespedes";
+        }
+
+        $query = $conexion->prepare($sql);
+
+        // Asignar valores a los parámetros
+        if (isset($disponible)) {
+            $query->bindParam(':disponible', $disponible);
+        }
+        if (isset($localidad_id)) {
+            $query->bindParam(':localidad_id', $localidad_id);
+        }
+        if (isset($fecha_inicio)) {
+            $query->bindParam(':fecha_inicio', $fecha_inicio);
+        }
+        if (isset($cantidad_huespedes)) {
+            $query->bindParam(':cantidad_huespedes', $cantidad_huespedes);
+        }
+
+        $query->execute();
+        $propiedades = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        $response->getBody()->write(json_encode($propiedades));
+        return $response->withStatus(200);
+    } catch (PDOException $e){
         $payload=json_encode([
             'status' => 'error',
-            'code' => 400,
-            'data' => $e,
+            'code' => 500,
+            "error" => $e->getMessage()
         ]);
         $response->getBody()->write($payload);
-        return $response->withHeader('Content-Type','application/json');
+        return $response->withHeader('Content-Type','application/json')->withStatus(500);   
     }
 });
 
