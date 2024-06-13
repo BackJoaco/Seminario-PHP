@@ -1,15 +1,55 @@
-.nav  { 
-   position: absolute; 
-   width: 15%;
-    height: 100%;
-    background-color: brown;
-    text-align: left;
-    list-style: none;
-    padding: 0;
-    display: flex;
-    gap: 1rem;
-  }
-.nav ul li a {
-    color: black;
-    text-decoration: none;
-  }
+.navbar {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0; /* Ajusta el navbar desde el top hasta el bottom */
+  width: 200px;
+  background-color: #343a40;
+  padding-top: 20px;
+  z-index: 100; /* Asegura que el Navbar esté por debajo del contenido principal */
+}
+
+.navbar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.navbar li {
+  margin: 20px 0;
+}
+
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+/* Ajuste para evitar superposición con el Header */
+.header {
+  position: relative;
+  z-index: 200; /* Asegura que el Header esté por encima del Navbar */
+  background-color: #f8f9fa;
+  padding: 10px;
+}
+
+/* Ajuste para el contenido principal */
+.main-content {
+  margin-left: 220px; /* Ajusta el margen izquierdo para dejar espacio para el Navbar */
+  margin-bottom: 100px; /* Ajusta el margen inferior para dejar espacio para el Footer */
+}
+
+/* Ajuste para el Footer */
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: #f8f9fa;
+  padding: 10px;
+  z-index: 200; /* Asegura que el Footer esté por encima del Navbar */
+}

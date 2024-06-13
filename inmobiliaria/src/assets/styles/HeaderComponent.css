@@ -1,21 +1,16 @@
 .header {
-    background-color: #222;
-    color: gray;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-  }
-  
-  .header h1 {
-    margin-left: 50px;
-    
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f8f9fa;
+}
 
-  }
-   .header img {
-    width: 2cm !important; /* Ajusta el tamaño según tus necesidades */
-    height: 2cm !important;
-    margin-top: 5px;
-    border-radius: 1%;
-  }
-  
- 
+.logo img {
+  height: 50px;
+  margin-right: 15px;
+}
+
+.title {
+  font-size: 24px;
+  color: #333;
+}

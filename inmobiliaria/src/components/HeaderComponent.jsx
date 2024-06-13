@@ -4,11 +4,10 @@ import headerImage from '../assets/images/logoInmobiliaria.jpg';
 const HeaderComponent = () => {
     return (
       <header className="header">
-        <img src={headerImage} alt="Header">
-        </img>
-        <h1>
-          Inmobiliaria  
-          </h1>
+        <div className="logo">
+          <img src={headerImage} alt="Logo" />
+        </div>
+        <h1 className="title">Inmobiliaria</h1>
       </header>
     );
   };
