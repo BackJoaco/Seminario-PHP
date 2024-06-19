@@ -1,0 +1,22 @@
+
+  .list-container {
+    margin-left: 15%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.list-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+}
+
+.list-item div {
+    margin-bottom: 5px;
+}
+
+.list-item strong {
+    color: #333;
+}

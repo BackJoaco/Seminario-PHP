@@ -3,18 +3,10 @@ const NavBarComponent =()=>{
     return (
       <nav className="navbar">
         <ul>
-          <li>
-            {/*<Link to="/">Inicio</Link>*/}
-            INICIO
-          </li>
-          <li>
-            {/*<Link to="/propiedades">Propiedades</Link>*/}
-            Propiedades
-          </li>
-          <li>
-            {/*<Link to="/contacto">Contacto</Link>*/}
-            Contactos
-          </li>
+        <li><a href="/tipos_Propiedad">TipoPropiedades</a></li>
+            <li><a href="/propiedad">Propiedades</a></li>
+            <li><a href="/reservas">Reservas</a></li>
+            
         </ul>
       </nav>
     )

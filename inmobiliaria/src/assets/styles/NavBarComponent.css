@@ -11,7 +11,8 @@
   z-index: 100; /* Asegura que el Navbar esté por debajo del contenido principal */
 }
 
-.navbar ul {
+.lista {
+  margin:0;
   list-style-type: none;
   padding: 0;
 }
