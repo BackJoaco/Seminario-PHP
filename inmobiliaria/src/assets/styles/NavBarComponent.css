@@ -3,12 +3,17 @@
   flex-direction: column;
   position: fixed;
   left: 0;
-  top: 0;
+  top: 60px; /* Ajusta el top para dejar espacio para el Header */
   bottom: 0; /* Ajusta el navbar desde el top hasta el bottom */
   width: 200px;
   background-color: #343a40;
   padding-top: 20px;
   z-index: 100; /* Asegura que el Navbar esté por debajo del contenido principal */
+}
+
+.navbar ul {
+  list-style-type: none; /* Quita el punto de cada <li> */
+  padding: 0;
 }
 
 .lista {
@@ -18,17 +23,21 @@
 }
 
 .navbar li {
-  margin: 20px 0;
+  margin: 5px 0;
 }
 
 .navbar a {
+  display: block; /* Hace que el enlace ocupe todo el <li> */
+  padding: 20px; /* Espaciado alrededor del texto */
   color: #fff;
   text-decoration: none;
   font-size: 18px;
+  background-color: #3c4045; /* Fondo un poco más oscuro para cada opción */
 }
 
 .navbar a:hover {
   text-decoration: underline;
+  background-color: #4a4f55; /* Fondo más oscuro al pasar el ratón */
 }
 
 /* Ajuste para evitar superposición con el Header */
