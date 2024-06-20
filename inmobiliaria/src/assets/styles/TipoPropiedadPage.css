@@ -1,3 +1,5 @@
-.boton{
-    margin-left:200px;
+.main-content {
+  padding: 20px;
+  margin-left: 220px; /* Ajusta según el ancho de tu navbar */
+  margin-bottom: 100px; /* Ajusta según la altura de tu footer */
 }

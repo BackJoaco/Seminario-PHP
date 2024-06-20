@@ -1,22 +1,51 @@
-
-  .list-container {
-    margin-left: 15%;
-    padding: 10px;
+.list-container {
+    padding: 20px;
+    margin-left: 220px; /* Ajusta según el ancho de tu navbar */
+    margin-bottom: 100px; /* Ajusta según la altura de tu footer */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .list-item {
+    background-color: #f8f9fa;
     border: 1px solid #ccc;
     border-radius: 5px;
-}
-
-.list-item {
-    margin-bottom: 10px;
     padding: 10px;
-    background-color: #f5f5f5;
-    border-radius: 5px;
-}
-
-.list-item div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .list-item div {
     margin-bottom: 5px;
-}
-
-.list-item strong {
-    color: #333;
-}
+  }
+  
+  .list-item button {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 5px;
+  }
+  
+  .list-item button:hover {
+    background-color: #0056b3;
+  }
+  
+  .list-item button:last-of-type {
+    background-color: #dc3545;
+  }
+  
+  .list-item button:last-of-type:hover {
+    background-color: #c82333;
+  }
+  
+  .mensaje {
+    margin-top: 20px;
+    color: red;
+    font-weight: bold;
+  }
+  

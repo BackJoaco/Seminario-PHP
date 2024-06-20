@@ -39,7 +39,6 @@ const NewTipoPropiedad = () => {
       setMensaje(errorMessage.trim());
       
     }
-    alert(mensaje);
   };
 
   return (
@@ -60,8 +59,7 @@ const NewTipoPropiedad = () => {
           </div>
           <button type="submit">Crear</button>
         </form>
-        {alert}
-        {/*{mensaje && <p className="error">{mensaje}</p>}*/}
+        {mensaje && <p className="error">{mensaje}</p>}
       </div>
       <FooterComponent />
     </div>

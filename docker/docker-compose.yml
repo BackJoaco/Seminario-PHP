@@ -1,11 +1,14 @@
-version: '3'
+version: '3.8'
+
 volumes:
     dbvolume:
         name: ${DB_VOLUME}
         external: true
+
 networks:
     db:
     app:
+
 services:
     db:
         image: mysql:8.0
@@ -21,6 +24,7 @@ services:
         networks:
             - db
             - app
+
     dbadmin:
         image: phpmyadmin
         environment:
@@ -32,11 +36,13 @@ services:
             - db
         ports:
             - "${DBADMIN_PORT}:80"
+
     composer:
         image: composer
         volumes:
             - ./slim:/app
         command: bash -c "([ ! -f composer.json ] && composer require slim/slim:'4.*' slim/psr7) || ([ ! -d vendor ] && composer install -no) || exit 0"
+
     slim:
         build: ./docker/slim
         image: ${COMPOSE_PROJECT_NAME}_slim

@@ -26,14 +26,17 @@ const TipoPropiedadPage= () => {
   const elementos=tipoPropiedades.map(tipoPropiedad=>({nombre:tipoPropiedad.nombre}));
   return (
     <div>
-    <HeaderComponent />
+      <HeaderComponent />
       <NavBarComponent />
-      <div>
-        <ListarComponent elementos={elementos} linkEdit={linkEdit}/>
-        <button  onClick={navigateToNewTipoPropiedad} className="boton">Crear Nuevo Tipo Propiedad</button>
+      <div className="main-content">
+        <ListarComponent elementos={elementos} linkEdit={linkEdit} />
+        <button onClick={navigateToNewTipoPropiedad} className="boton">
+          Crear Nuevo Tipo Propiedad
+        </button>
       </div>
       <FooterComponent />
     </div>
+
   );
 };
 
