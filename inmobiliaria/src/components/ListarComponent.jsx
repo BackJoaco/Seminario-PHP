@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import "../assets/styles/ListarComponent.css";
 
 const ListarComponent = (props) => {
   const navigate = useNavigate();
-  const [mensaje, setMensaje] = React.useState('');
+  const [mensaje, setMensaje] = useState('');
 
   const navigateToNewTipoPropiedad = () => {
     navigate(props.linkEdit);
@@ -16,26 +16,19 @@ const ListarComponent = (props) => {
     if (!confirmDelete) {
       return;
     }
+    console.log(id);
     try {
       const response = await axios.delete(`http://localhost/tipos_propiedad/${id}`);
       if (response.status === 204) {
         setMensaje('Tipo de propiedad eliminado correctamente.');
-        // Aquí podrías actualizar la lista de elementos si es necesario
         props.setElementos(prevElementos => prevElementos.filter(elemento => elemento.id !== id));
+      } else {
+        console.error('Error en la respuesta DELETE:', response);
+        setMensaje('Ha ocurrido un error al eliminar. Por favor, inténtalo de nuevo.');
       }
     } catch (error) {
       console.error('Error al eliminar:', error);
-      const errors = error.response?.data?.errors;
-      let errorMessage = 'Ha ocurrido un error al eliminar.';
-      if (errors) {
-        errorMessage = '';
-        for (const key in errors) {
-          if (errors.hasOwnProperty(key)) {
-            errorMessage += errors[key] + '. ';
-          }
-        }
-      }
-      setMensaje(errorMessage.trim());
+      setMensaje('Ha ocurrido un error al eliminar. Por favor, inténtalo de nuevo.');
     }
   };
 

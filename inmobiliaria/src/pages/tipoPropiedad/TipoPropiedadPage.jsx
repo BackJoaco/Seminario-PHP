@@ -6,13 +6,11 @@ import ListarComponent from "../../components/ListarComponent";
 import axios from "axios";
 import "../../assets/styles/TipoPropiedadPage.css";
 import { useNavigate } from 'react-router-dom';
-const TipoPropiedadPage= () => {
+
+const TipoPropiedadPage = () => {
   const [tipoPropiedades, setTipoPropiedades] = useState([]);
   const navigate = useNavigate();
 
-  const navigateToNewTipoPropiedad = () => {
-    navigate('/tipos_Propiedad/newTipos_propiedad');
-  };
   useEffect(() => {
     axios.get('http://localhost/tipos_propiedad')
       .then(response => {
@@ -22,21 +20,46 @@ const TipoPropiedadPage= () => {
         console.error('Error Fetching', error);
       });
   }, []);
-  let linkEdit="/tipos_propiedad/newTipos_propiedad";
-  const elementos=tipoPropiedades.map(tipoPropiedad=>({nombre:tipoPropiedad.nombre}));
+
+  const navigateToNewTipoPropiedad = () => {
+    navigate('/tipos_propiedad/newTipos_propiedad');
+  };
+
+  const handleDeleteElemento = async (id) => {
+    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar este tipo de propiedad?");
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+      const response = await axios.delete(`http://localhost/tipos_propiedad/${id}`);
+      if (response.status === 204) {
+        setTipoPropiedades(prevTipos => prevTipos.filter(tipo => tipo.id !== id));
+      } else {
+        console.error('Error en la respuesta DELETE:', response);
+      }
+    } catch (error) {
+      console.error('Error al eliminar:', error);
+    }
+  };
+
   return (
     <div>
       <HeaderComponent />
       <NavBarComponent />
       <div className="main-content">
-        <ListarComponent elementos={elementos} linkEdit={linkEdit} />
+        <ListarComponent
+          elementos={tipoPropiedades}
+          linkEdit="/tipos_propiedad/newTipos_propiedad"
+          setElementos={setTipoPropiedades} // Pasar setElementos como prop
+          handleDelete={handleDeleteElemento} // Pasar la función de eliminar como prop
+        />
         <button onClick={navigateToNewTipoPropiedad} className="boton">
           Crear Nuevo Tipo Propiedad
         </button>
       </div>
       <FooterComponent />
     </div>
-
   );
 };
 
