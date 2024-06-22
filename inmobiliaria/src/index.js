@@ -7,6 +7,7 @@ import PropiedadPage from './pages/propiedad/PropiedadPage';
 import TipoPropiedadPage from './pages/tipoPropiedad/TipoPropiedadPage';
 import ReservaPage from './pages/reserva/ReservaPage';
 import NewTipoPropiedad from './pages/tipoPropiedad/NewTipoPropiedad';
+import EditTipoPropiedad from './pages/tipoPropiedad/EditTipoPropiedad';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -17,7 +18,8 @@ root.render(
         <Route path="/propiedad" element={<PropiedadPage />} />
         <Route path="/tipos_propiedad" element={<TipoPropiedadPage/>}/>
         <Route path="/reservas" element={<ReservaPage/>}/>
-        <Route path="/tipos_propiedad/newTipos_propiedad" element={<NewTipoPropiedad/>}/>
+        <Route path="/tipos_propiedad/newTiposPropiedad" element={<NewTipoPropiedad/>}/>
+        <Route path="/tipos_propiedad/editTiposPropiedad" element={<EditTipoPropiedad/>}/>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

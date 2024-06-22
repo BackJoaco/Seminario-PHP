@@ -22,7 +22,7 @@ const TipoPropiedadPage = () => {
   }, []);
 
   const navigateToNewTipoPropiedad = () => {
-    navigate('/tipos_propiedad/newTipos_propiedad');
+    navigate('/tipos_propiedad/newTiposPropiedad');
   };
 
   const handleDeleteElemento = async (id) => {
@@ -50,7 +50,7 @@ const TipoPropiedadPage = () => {
       <div className="main-content">
         <ListarComponent
           elementos={tipoPropiedades}
-          linkEdit="/tipos_propiedad/newTipos_propiedad"
+          linkEdit="/tipos_propiedad/editTiposPropiedad"
           setElementos={setTipoPropiedades} // Pasar setElementos como prop
           handleDelete={handleDeleteElemento} // Pasar la función de eliminar como prop
         />

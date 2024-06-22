@@ -7,7 +7,7 @@ const ListarComponent = (props) => {
   const navigate = useNavigate();
   const [mensaje, setMensaje] = useState('');
 
-  const navigateToNewTipoPropiedad = () => {
+  const navigateToEditTipoPropiedad = (elemento) => {
     navigate(props.linkEdit);
   };
 
@@ -16,7 +16,6 @@ const ListarComponent = (props) => {
     if (!confirmDelete) {
       return;
     }
-    console.log(id);
     try {
       const response = await axios.delete(`http://localhost/tipos_propiedad/${id}`);
       if (response.status === 204) {
@@ -41,7 +40,7 @@ const ListarComponent = (props) => {
           {Object.keys(elemento).map((key) => (
             <div key={key}><strong>{key}:</strong> {elemento[key]}</div>
           ))}
-          <button onClick={navigateToNewTipoPropiedad}>Editar</button>
+          <button onClick={() => navigateToEditTipoPropiedad(elemento)}>Editar</button>
           <button onClick={() => handleDelete(elemento.id)}>Eliminar</button>
         </div>
       ))}
