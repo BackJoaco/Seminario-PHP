@@ -1,0 +1,29 @@
+.titulo{
+    text-align: center;
+
+}
+.list-container {
+    padding: 20px;
+    margin-left: 220px; /* Ajusta según el ancho de tu navbar */
+    margin-bottom: 100px; /* Ajusta según la altura de tu footer */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .list-item {
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .list-item div {
+    margin-bottom: 5px;
+  }
+  .img{
+    width: '100px'; 
+    height: '100px';
+  }

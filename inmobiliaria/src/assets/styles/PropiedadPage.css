@@ -1,0 +1,16 @@
+.main-content {
+    padding: 20px;
+    margin-left: 180px; /* Ajusta según el ancho de tu navbar */
+    margin-bottom: 100px;
+  }
+  
+.boton {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}

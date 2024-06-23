@@ -30,16 +30,23 @@ const ListarComponent = (props) => {
       setMensaje('Ha ocurrido un error al eliminar. Por favor, inténtalo de nuevo.');
     }
   };
-
+  const navigateToDetailPropiedad = (id) => {
+    navigate(`/propiedades/detailPropiedad/${id}`);
+  };
   const elementos = props.elementos;
-
+  const esProp=props.esProp;
   return (
     <div className="list-container">
       {elementos.map((elemento, index) => (
         <div className="list-item" key={index}>
           {Object.keys(elemento).map((key) => (
-            <div key={key}><strong>{key}:</strong> {elemento[key]}</div>
+            key !== "id" && (
+              <div key={key}>
+                <strong>{key}:</strong> {elemento[key]}
+              </div>
+            )
           ))}
+          {esProp && <button onClick={()=>navigateToDetailPropiedad(elemento.id)}>Propiedad en detalle</button>} 
           <button onClick={() => navigateToEditTipoPropiedad(elemento)}>Editar</button>
           <button onClick={() => handleDelete(elemento.id)}>Eliminar</button>
         </div>
