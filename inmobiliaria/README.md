@@ -1,3 +1,10 @@
+# Para este proyecto se utilizó la bibilioteca axios
+ Utilizada para hacer solicitudes HTTP desde el navegador y Node.js, de una manera sencilla se realizan solicitudes a servidores, manejar respuestas, y gestionar errores.
+
+
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

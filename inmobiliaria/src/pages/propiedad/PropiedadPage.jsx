@@ -69,7 +69,7 @@ const PropiedadPage = () => {
     cantidad_huespedes: propiedad.cantidad_huespedes,
     valor_noche: propiedad.valor_noche
   }));
-
+ let esProp=true;
   return (
     <div>
       <HeaderComponent />

@@ -16,11 +16,22 @@ const DeleteButton = ({ endpoint, id, setMensaje, setElementos }) => {
         setElementos(prevElementos => prevElementos.filter(elemento => elemento.id !== id));
       } else {
         console.error('Error en la respuesta DELETE:', response);
-        setMensaje('Ha ocurrido un error al eliminar. Por favor, inténtalo de nuevo1.');
+        setMensaje(response?.data?.error ||'Ha ocurrido un error al eliminar. Por favor, inténtalo de nuevo.');
       }
     } catch (error) {
       console.error('Error al eliminar:', error);
-      setMensaje('Ha ocurrido un error al eliminar. Por favor, inténtalo de nuevo.');
+      const errors = error.response?.data?.error;
+      let errorMessage = 'Ha ocurrido un error';
+      if (errors) {
+        errorMessage = 'Error: ';
+        for (const key in errors) {
+          if (errors.hasOwnProperty(key)) {
+            errorMessage += errors[key] + '. ';
+          }
+        }
+      }
+      console.log('Error message:', errorMessage);
+      setMensaje(errorMessage.trim());
     }
   };
 

@@ -80,10 +80,22 @@ const EditPropiedad = () => {
     event.preventDefault();
     axios.put(`http://localhost/propiedades/${id}`, propiedad)
       .then(response => {
-        setMessage(response.data.message || "Propiedad actualizada con éxito");
+        setMessage(response.data.actualizacion || "Propiedad actualizada con éxito");
       })
       .catch(error => {
-        setMessage(error.response?.data?.message || "Hubo un error al actualizar la propiedad");
+        console.log(error);
+      const errors = error.response?.data?.error;
+      let errorMessage = 'Ha ocurrido un error';
+      if (errors) {
+        errorMessage = '';
+        for (const key in errors) {
+          if (errors.hasOwnProperty(key)) {
+            errorMessage += errors[key] + '. ';
+          }
+        }
+      }
+      console.log('Error message:', errorMessage);
+      setMessage(errorMessage.trim());
       });
   };
 
