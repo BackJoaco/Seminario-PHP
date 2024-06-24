@@ -48,15 +48,15 @@ const TipoPropiedadPage = () => {
       <HeaderComponent />
       <NavBarComponent />
       <div className="main-content">
+      <button onClick={navigateToNewTipoPropiedad} className="boton">
+          Crear Nuevo Tipo Propiedad
+        </button>
         <ListarComponent
           elementos={tipoPropiedades}
           linkEdit="/tipos_propiedad/editTiposPropiedad"
           setElementos={setTipoPropiedades} // Pasar setElementos como prop
           handleDelete={handleDeleteElemento} // Pasar la función de eliminar como prop
         />
-        <button onClick={navigateToNewTipoPropiedad} className="boton">
-          Crear Nuevo Tipo Propiedad
-        </button>
       </div>
       <FooterComponent />
     </div>

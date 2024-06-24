@@ -12,13 +12,17 @@ const ListarComponent = (props) => {
   };
 
   const elementos = props.elementos;
-
+  const esProp=props.esProp;
   return (
     <div className="list-container">
       {elementos.map((elemento, index) => (
         <div className="list-item" key={index}>
           {Object.keys(elemento).map((key) => (
-            <div key={key}><strong>{key}:</strong> {elemento[key]}</div>
+            key !== "id" && (
+              <div key={key}>
+                <strong>{key}:</strong> {elemento[key]}
+              </div>
+            )
           ))}
           <button onClick={() => navigateToEditTipoPropiedad()}>Editar</button>
           <DeleteButton
