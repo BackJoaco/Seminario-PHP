@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import DeleteButton from './DeleteButton';
 import EditButton from './EditButton';
 import "../assets/styles/ListarComponent.css";
+import { useNavigate } from 'react-router-dom';
 
 const ListarComponent = (props) => {
   const [mensaje, setMensaje] = useState('');
+  const navigate = useNavigate();
 
-  const navigateToEditTipoPropiedad = () => {
-    navigate(props.linkEdit);
-  };
   const navigateToDetailPropiedad =(id) =>{
     navigate(`/propiedades/detailPropiedad/${id}`); //Detalle Propiedad
   };
   const elementos = props.elementos;
+  const esProp=props.esProp;
   return (
     <div className="list-container">
       {elementos.map((elemento, index) => (
@@ -25,7 +25,10 @@ const ListarComponent = (props) => {
             )
           ))} 
           {esProp && <button onClick={()=> navigateToDetailPropiedad(elemento.id)}> Ver Propiedad en Detalle</button>}
-          <button onClick={() => navigateToEditTipoPropiedad()}>Editar</button>
+          <EditButton
+            linkEdit={props.linkEdit}
+            id={elemento.id}
+          />
           <DeleteButton
             endpoint={props.linkDelete}
             id={elemento.id}
