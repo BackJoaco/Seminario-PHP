@@ -11,25 +11,6 @@ const EditTipoPropiedad = () => {
   const [mensaje, setMensaje] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Cargar datos de todos los tipos de propiedad y seleccionar el necesario al montar el componente
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost/tipos_propiedad');
-        const tipoPropiedad = response.data.data.find(tp => tp.id === parseInt(id));
-        if (tipoPropiedad) {
-          setNombre(tipoPropiedad.nombre);
-        } else {
-          setMensaje('Tipo de propiedad no encontrado');
-        }
-      } catch (error) {
-        console.error('Error fetching tipos de propiedad:', error);
-        setMensaje('Error al cargar los tipos de propiedad');
-      }
-    };
-    fetchData();
-  }, [id]);
-
   const handleInputChange = (event) => {
     setNombre(event.target.value);
   };
@@ -41,6 +22,7 @@ const EditTipoPropiedad = () => {
       return;
     }
     try {
+      console.log(id);
       const response = await axios.put(`http://localhost/tipos_propiedad/${id}`, { nombre });
       setMensaje(`Tipo de propiedad actualizado correctamente: ${response.data?.status} ${response.data?.Actualizado} ${response.data?.code}`);
       navigate('/tipos_propiedad'); // Redirigir después de la actualización exitosa
