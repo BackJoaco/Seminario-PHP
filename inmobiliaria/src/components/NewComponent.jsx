@@ -36,7 +36,7 @@ const NewComponent = ({ endpoint, fields, title }) => {
               }
         }
       const response = await axios.post(endpoint, formData);
-      setMensaje(`Nuevo recurso creado: ${response.data?.status} ${response.data?.code} ${response.data?.Registrado} `);
+      setMensaje(`Nuevo recurso creado: ${response.data?.status} ${response.data?.code} ${response.data?.Registrado}` );
       console.log(response);
     } catch (error) {
       console.log(error);
