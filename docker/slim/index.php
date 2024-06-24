@@ -181,7 +181,7 @@ $app->get('/', function(Request $request,Response $response,$args){
              return $response->withHeader('Content-Type','application/json')->withStatus(204);
              } 
             else{
-                $response->getBody()->write(json_encode(['status'=>'error','code'=>400,'errors'=>$vector]));
+                $response->getBody()->write(json_encode(['status'=>'error','code'=>400,'error'=>$vector]));
                 return $response->withHeader('Content-Type','application/json')->withStatus(400);
             } 
             }
@@ -289,7 +289,7 @@ $app->get('/', function(Request $request,Response $response,$args){
                 $vector['errorSize']='El nombre no puede superar los 50 caracteres';  
             } 
             if($vector){
-                $response->getBody()->write(json_encode(['status'=>'error','code'=>400,'ERRORS'=>$vector]));
+                $response->getBody()->write(json_encode(['status'=>'error','code'=>400,'error'=>$vector]));
                 return $response->withHeader('Content-Type','application/json')->withStatus(400);
             }
             else{
@@ -634,43 +634,73 @@ $app->get('/', function(Request $request,Response $response,$args){
             return $response->withHeader('Content-Type','application/json')->withStatus(500);
         } 
     }); 
-    $app->get('/propiedades', function(Request $request,Response $response,array $args){
-        $filtros=$request->getQueryParams();
-        try{
-            $connection = getConnection();
-            $consulta="";
-            foreach($filtros as $key=>$value){
-                if(isset($filtros[$key])){
-                    $consulta=$consulta." and Prop.".$key."=".$value;
+    $app->get('/propiedades', function(Request $request, Response $response, array $args) {
+        try {
+            $filtros = $request->getQueryParams();
+            $consulta = "SELECT 
+                            Prop.*, 
+                            Loc.nombre AS ciudad,
+                            Tipo.nombre AS tipoPropiedad
+                        FROM 
+                            propiedades Prop,
+                            localidades Loc,
+                            tipo_propiedades Tipo
+                        WHERE 
+                            Prop.localidad_id = Loc.id 
+                            AND Prop.tipo_propiedad_id = Tipo.id";
+    
+            $bindings = []; // Array para almacenar los parámetros de la consulta preparada
+            $firstFilter = true;
+    
+            foreach ($filtros as $key => $value) {
+                switch ($key) {
+                    case 'disponible':
+                        $consulta .= $firstFilter ? " AND Prop.disponible = ?" : " AND Prop.disponible = ?";
+                        $bindings[] = ($value === 'true' ? 1 : 0);
+                        $firstFilter = false;
+                        break;
+                    case 'localidad_id':
+                        $consulta .= $firstFilter ? " AND Prop.localidad_id = ?" : " AND Prop.localidad_id = ?";
+                        $bindings[] = intval($value);
+                        $firstFilter = false;
+                        break;
+                    case 'fecha_inicio_disponibilidad':
+                        $consulta .= $firstFilter ? " AND Prop.fecha_inicio_disponibilidad >= ?" : " AND Prop.fecha_inicio_disponibilidad >= ?";
+                        $bindings[] = $value; // Asegúrate de que $value sea una fecha válida en el formato adecuado
+                        $firstFilter = false;
+                        break;
+                    case 'cantidad_huespedes':
+                        $consulta .= $firstFilter ? " AND Prop.cantidad_huespedes = ?" : " AND Prop.cantidad_huespedes = ?";
+                        $bindings[] = intval($value);
+                        $firstFilter = false;
+                        break;
+                    // Añadir más casos según los filtros que esperas manejar
                 }
             }
-            $query = $connection->query('SELECT
-                    Prop.*,Loc.nombre AS ciudad,
-                    Tipo.nombre AS tipoPropiedad
-                FROM 
-                    propiedades Prop,
-                    localidades Loc,
-                    tipo_propiedades Tipo
-                WHERE 
-                    Prop.localidad_id=Loc.id 
-                    and Prop.tipo_propiedad_id=Tipo.id '.$consulta);
-            $tipos = $query->fetchAll(PDO::FETCH_ASSOC);
+    
+            $connection = getConnection();
+            $stmt = $connection->prepare($consulta);
+            $stmt->execute($bindings);
+            $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
             $payload = json_encode([
                 'status' => 'success',
                 'code' => 200,
-                'data' => $tipos
+                'data' => $resultado
             ]);
+    
             $response->getBody()->write($payload);
-            return $response->withHeader('Content-Type','application/json')->withStatus(200);
-        } catch(PDOException $e){
-            $payload=json_encode([
-                'status' => 'success',
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        } catch (PDOException $e) {
+            $payload = json_encode([
+                'status' => 'error',
                 'code' => 500,
-                'error'=>$e->getMessage()
+                'error' => $e->getMessage()
             ]);
+    
             $response->getBody()->write($payload);
-            return $response->withHeader('Content-Type','application/json')->withStatus(500);
-        } 
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
     });
     $app->get('/propiedades/{id}',function(Request $request, Response $response,array $args){
        $buscarId=$args['id'];
@@ -722,7 +752,7 @@ $app->get('/', function(Request $request,Response $response,$args){
             }
         }
         if($vector){
-            $response->getBody()->write(json_encode(['status'=>'error','code'=>400,'errors'=>$vector]));
+            $response->getBody()->write(json_encode(['status'=>'error','code'=>400,'error'=>$vector]));
            return $response->withHeader('Content-Type','application/json')->withStatus(400);
         }
          try{
@@ -887,7 +917,7 @@ $app->get('/', function(Request $request,Response $response,$args){
             $query->execute();
     
             // Respuesta exitosa
-            $response->getBody()->write(json_encode(['status' => 'success', 'code' => 200, 'message' => 'Propiedad actualizada con éxito']));
+            $response->getBody()->write(json_encode(['status' => 'success', 'code' => 200, 'actualizacion' => 'Propiedad actualizada con éxito']));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (PDOException $e) {
             $payload = json_encode([
@@ -1027,7 +1057,7 @@ $app->get('/', function(Request $request,Response $response,$args){
              $query->bindValue(':valor_total',$valor_total);
              $query->bindValue(':cantidad_noches',$data['cantidad_noches']);
              $query->execute();
-             $response->getBody()->write(json_encode(['status'=>'success','code'=>201,'Reserva Registrada'=>'Se completo el registro']));
+             $response->getBody()->write(json_encode(['status'=>'success','code'=>201,'Registrado'=>'Se completo el registro']));
              return $response->withHeader('Content-Type','application/json')->withStatus(201);
              } 
             }
@@ -1065,7 +1095,7 @@ $app->get('/', function(Request $request,Response $response,$args){
             }
         }
            if($vector){
-            $response->getBody()->write(json_encode(['status'=>'error','code'=>400,'errors'=>$vector]));
+            $response->getBody()->write(json_encode(['status'=>'error','code'=>400,'error'=>$vector]));
             return $response->withStatus(400);
            }
            else{
@@ -1119,7 +1149,7 @@ $app->get('/', function(Request $request,Response $response,$args){
             $query->bindValue(':cantidad_noches',$tipos['cantidad_noches']);
             $query->bindValue(':valor_total',$valor_total);
             $query->execute();
-            $response->getBody()->write(json_encode(['status'=>'success','code'=>201,'Actualizacion Exitosa'=>'Se ha realizado la actualizacion']));
+            $response->getBody()->write(json_encode(['status'=>'success','code'=>201,'actualizacion'=>'Se ha realizado la actualizacion']));
             return $response->withHeader('Content-Type','application/json')->withStatus(201);
             } 
            }
