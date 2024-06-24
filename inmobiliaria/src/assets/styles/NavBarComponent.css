@@ -3,11 +3,11 @@
   flex-direction: column;
   position: fixed;
   left: 0;
-  top: 60px; /* Ajusta el top para dejar espacio para el Header */
-  bottom: 0; /* Ajusta el navbar desde el top hasta el bottom */
+  top: 0; /* Ajusta el top para que el navbar comience desde el top de la página */
+  height: 100%; /* Ajusta la altura del navbar al 100% de la página */
   width: 200px;
   background-color: #343a40;
-  padding-top: 20px;
+  padding-top: 80px; /* Ajusta el padding-top para dejar espacio para el Header */
   z-index: 100; /* Asegura que el Navbar esté por debajo del contenido principal */
 }
 

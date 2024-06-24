@@ -59,7 +59,6 @@ const camposPropiedad = [
     fields={camposPropiedad} 
     title="Crear Nueva Propiedad" 
   />
-  <FooterComponent></FooterComponent>
   </div>
 );
 

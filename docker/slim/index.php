@@ -781,107 +781,125 @@ $app->get('/', function(Request $request,Response $response,$args){
             return $response->withHeader('Content-Type','application/json')->withStatus(500);
         } 
     });
-    $app->put('/propiedades/{id}',function(Request $request,Response $response,array $args){
-        $data=$request->getParsedBody();
-        $buscarId=$args['id'];
-        $vector=array();
-         try{
-            $conexion = getConnection();    
-            $sql="SELECT * FROM propiedades WHERE id = '".$buscarId ."'";
-            $query = $conexion->query($sql);
-            $tipos = $query->fetch(PDO::FETCH_ASSOC);
-            if(!($tipos)){
-              $response->getBody()->write(json_encode(['errorPropiedadInexistente'=>'No existe propiedad asociada a ese ID']));
-              return $response->withHeader('Content-Type','application/json')->withStatus(404);
+    $app->put('/propiedades/{id}', function ($request, $response, $args) {
+        $data = $request->getParsedBody();
+        $buscarId = $args['id'];
+        $vector = [];
+    
+        try {
+            $conexion = getConnection();
+    
+            // Verificar si la propiedad existe
+            $sql = "SELECT * FROM propiedades WHERE id = :id";
+            $query = $conexion->prepare($sql);
+            $query->execute(['id' => $buscarId]);
+            $propiedad = $query->fetch(PDO::FETCH_ASSOC);
+    
+            if (!$propiedad) {
+                $response->getBody()->write(json_encode(['error' => 'No existe propiedad asociada a ese ID']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
-                $requiredFields = [
-                    'domicilio' => 'El campo domicilio es requerido',
-                    'localidad_id' => 'El campo localidad_id es requerido',
-                    'cantidad_huespedes' => 'El campo cantidad_huespedes es requerido',
-                    'fecha_inicio_disponibilidad' => 'El campo fecha_inicio_disponibilidad es requerido',
-                    'cantidad_dias' => 'El campo cantidad_dias es requerido',
-                    'disponible' => 'El campo disponible es requerido',
-                    'valor_noche' => 'El campo valor_noche es requerido',
-                    'tipo_propiedad_id' => 'El campo tipo_propiedad_id es requerido'
-                ];
-                foreach ($requiredFields as $field => $errorMessage) {
-                    if (!isset($data[$field])) {
-                        $vector['error ' .$field] = $errorMessage;
-                    }
+    
+            // Validar campos requeridos
+            $requiredFields = [
+                'domicilio' => 'El campo domicilio es requerido',
+                'localidad_id' => 'El campo localidad_id es requerido',
+                'cantidad_huespedes' => 'El campo cantidad_huespedes es requerido',
+                'fecha_inicio_disponibilidad' => 'El campo fecha_inicio_disponibilidad es requerido',
+                'cantidad_dias' => 'El campo cantidad_dias es requerido',
+                'disponible' => 'El campo disponible es requerido',
+                'valor_noche' => 'El campo valor_noche es requerido',
+                'tipo_propiedad_id' => 'El campo tipo_propiedad_id es requerido'
+            ];
+    
+            foreach ($requiredFields as $field => $errorMessage) {
+                if (!isset($data[$field])) {
+                    $vector[$field] = $errorMessage;
                 }
-                if($vector){
-                    $response->getBody()->write(json_encode(['status'=>'error','code'=>400,'error'=>$vector]));
-                    return $response->withHeader('Content-Type','application/json')->withStatus(400);
-                }
-                $consulta="";
-                foreach($data as $key=>$values) {
-                    if(isset($data[$key])){
-                        $tipos[$key]=$values;
-                    }
-                }  
-                $optionalFields=['cantidad_banios'=>null,'cantidad_habitaciones'=>null,'cochera'=>null,'imagen'=>null,'tipo_imagen'=>null];
-                foreach($optionalFields as $key=>$values){
-                    if(!isset($data[$key])){
-                        $tipos[$key]=$values;
-                    }
-                }
-                foreach($tipos as $key => $value) {
-                        if($key!='id'){
-                        $consulta .= $key . " = :" . $key . ", ";
-                        }
-                }
-                $consulta = rtrim($consulta, ", ");
-                $sql="SELECT * FROM localidades WHERE id = '".$tipos['localidad_id'] ."'";
-                $query=$conexion->query($sql);
-                $consulta_repetido = $query->fetch(PDO::FETCH_ASSOC);
-                if(!($consulta_repetido)){
-                   $vector['errorLocalidadExistente']='No hay una localidad relacionada a ese id';
-                   $estado=400;
-                }
-                $sql="SELECT * FROM tipo_propiedades WHERE id ='".$tipos['tipo_propiedad_id'] ."'";
-                $query=$conexion->query($sql);
-                $consulta_repetido = $query->fetch(PDO::FETCH_ASSOC);
-                if(!$consulta_repetido){
-                    $vector['errorPropiedadExistente']='No hay un tipo de propiedad relacionada a ese id';
-                    $estado=400;
-                } 
-                if($vector){
-                    $response->getBody()->write(json_encode(['status'=>'error','code'=>400,'error'=>$vector]));
-                    return $response->withHeader('Content-Type','application/json')->withStatus(400);
-                }  
-              else{ 
-             $sql="UPDATE propiedades SET " .$consulta." WHERE id=:buscarId";  
-             $query=$conexion->prepare($sql);
-             $query->bindValue(':buscarId',$buscarId);
-             $query->bindValue(':domicilio',$tipos['domicilio']);
-             $query->bindValue(':localidad_id',$tipos['localidad_id']);
-             $query->bindValue(':cantidad_habitaciones',$tipos['cantidad_habitaciones']);
-             $query->bindValue(':cantidad_banios',$tipos['cantidad_banios']);
-             $query->bindValue(':cochera',$tipos['cochera']);
-             $query->bindValue(':cantidad_huespedes',$tipos['cantidad_huespedes']);
-             $query->bindValue(':fecha_inicio_disponibilidad',$tipos['fecha_inicio_disponibilidad']);
-             $query->bindValue(':cantidad_dias',$tipos['cantidad_dias']);
-             $query->bindValue(':disponible',$tipos['disponible']);
-             $query->bindValue(':valor_noche',$tipos['valor_noche']);
-             $query->bindValue(':tipo_propiedad_id',$tipos['tipo_propiedad_id']);
-             $query->bindValue(':imagen',$tipos['imagen']);
-             $query->bindValue(':tipo_imagen',$tipos['tipo_imagen']);
-             $query->execute();
-             $response->getBody()->write(json_encode(['status'=>'error','code'=>201,'Actualizacion Exitosa'=>'Se ha realizado la actualizacion']));
-             return $response->withHeader('Content-Type','application/json')->withStatus(201);   
             }
+    
+            if (!empty($vector)) {
+                $response->getBody()->write(json_encode(['status' => 'error', 'code' => 400, 'error' => $vector]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
-        catch (PDOException $e){
-              $payload=json_encode([
+    
+            // Verificar existencia de localidad
+            $sql = "SELECT * FROM localidades WHERE id = :localidad_id";
+            $query = $conexion->prepare($sql);
+            $query->execute(['localidad_id' => $data['localidad_id']]);
+            $localidad = $query->fetch(PDO::FETCH_ASSOC);
+    
+            if (!$localidad) {
+                $response->getBody()->write(json_encode(['error' => 'No existe una localidad relacionada a ese id']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+    
+            // Verificar existencia de tipo de propiedad
+            $sql = "SELECT * FROM tipo_propiedades WHERE id = :tipo_propiedad_id";
+            $query = $conexion->prepare($sql);
+            $query->execute(['tipo_propiedad_id' => $data['tipo_propiedad_id']]);
+            $tipoPropiedad = $query->fetch(PDO::FETCH_ASSOC);
+    
+            if (!$tipoPropiedad) {
+                $response->getBody()->write(json_encode(['error' => 'No existe un tipo de propiedad relacionado a ese id']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+    
+            // Construir la consulta UPDATE dinámicamente
+            $updateFields = [
+                'domicilio',
+                'localidad_id',
+                'cantidad_habitaciones',
+                'cantidad_banios',
+                'cochera',
+                'cantidad_huespedes',
+                'fecha_inicio_disponibilidad',
+                'cantidad_dias',
+                'disponible',
+                'valor_noche',
+                'tipo_propiedad_id',
+                'imagen',
+                'tipo_imagen'
+            ];
+    
+            $sql = "UPDATE propiedades SET ";
+    
+            foreach ($updateFields as $field) {
+                if (isset($data[$field])) {
+                    $sql .= "$field = :$field, ";
+                }
+            }
+    
+            $sql = rtrim($sql, ', ');
+            $sql .= " WHERE id = :id";
+    
+            // Preparar la consulta
+            $query = $conexion->prepare($sql);
+    
+            // Vincular los parámetros
+            foreach ($updateFields as $field) {
+                if (isset($data[$field])) {
+                    $query->bindValue(":$field", $data[$field]);
+                }
+            }
+    
+            $query->bindValue(':id', $buscarId);
+            $query->execute();
+    
+            // Respuesta exitosa
+            $response->getBody()->write(json_encode(['status' => 'success', 'code' => 200, 'message' => 'Propiedad actualizada con éxito']));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        } catch (PDOException $e) {
+            $payload = json_encode([
                 'status' => 'error',
                 'code' => 500,
-                "error" => $e->getMessage()
+                'error' => $e->getMessage()
             ]);
             $response->getBody()->write($payload);
-            return $response->withHeader('Content-Type','application/json')->withStatus(500);
-        } 
-      
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
     });
+    
     $app->delete('/propiedades/{id}',function(Request $request,Response $response,array $args ){
     $buscarId=$args['id'];
     $vector=array();

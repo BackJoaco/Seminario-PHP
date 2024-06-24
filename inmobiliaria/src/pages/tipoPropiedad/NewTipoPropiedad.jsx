@@ -13,12 +13,12 @@ const NewTipoPropiedad = () => (
   <div>
     <HeaderComponent/>
     <NavBarComponent/>
-  <NewComponent 
-    endpoint="http://localhost/tipos_propiedad" 
-    fields={camposTipoPropiedad} 
-    title="Crear Nuevo Tipo de Propiedad" 
-  />
-  <FooterComponent/>
+    <NewComponent 
+      endpoint="http://localhost/tipos_propiedad" 
+      fields={camposTipoPropiedad} 
+      title="Crear Nuevo Tipo de Propiedad" 
+    />
+    <FooterComponent/>
   </div>
 );
 

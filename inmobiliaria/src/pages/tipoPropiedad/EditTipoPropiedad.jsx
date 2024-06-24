@@ -1,70 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
 import HeaderComponent from "../../components/HeaderComponent";
 import FooterComponent from "../../components/FooterComponent";
 import NavBarComponent from "../../components/NavBarComponent";
+import { useParams } from 'react-router-dom';
+import axios from "axios";
+import "../../assets/styles/EditTipoPropiedad.css";
 
 const EditTipoPropiedad = () => {
-  const { id } = useParams(); // Obtener el id del tipo de propiedad a editar desde la URL
+  const { id } = useParams();
   const [nombre, setNombre] = useState('');
-  const [mensaje, setMensaje] = useState('');
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState('');
 
-  const handleInputChange = (event) => {
-    setNombre(event.target.value);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (!nombre) {
-      setMensaje('El nombre no puede estar vacío');
-      return;
-    }
-    try {
-      console.log(id);
-      const response = await axios.put(`http://localhost/tipos_propiedad/${id}`, { nombre });
-      setMensaje(`Tipo de propiedad actualizado correctamente: ${response.data?.status} ${response.data?.Actualizado} ${response.data?.code}`);
-      navigate('/tipos_propiedad'); // Redirigir después de la actualización exitosa
-    } catch (error) {
-      console.error('Error actualizando el tipo de propiedad:', error);
-      const errors = error.response?.data?.error;
-      let errorMessage = 'Ha ocurrido un error';
-      if (errors) {
-        errorMessage = '';
-        for (const key in errors) {
-          if (errors.hasOwnProperty(key)) {
-            errorMessage += errors[key] + '. ';
-          }
-        }
+  useEffect(() => {
+    axios.get('http://localhost/tipos_propiedad')
+    .then(response => {
+      const tipoPropiedad = response.data.find(item => item.id === parseInt(id));
+      if (tipoPropiedad) {
+        setNombre(tipoPropiedad.nombre);
+      } else {
+        setMessage("Tipo propiedad no encontrado");
       }
-      setMensaje(errorMessage.trim());
-    }
+      setLoading(false);
+    })
+    .catch(error => {
+      setMessage(error.response?.data?.message || "Hubo un error al obtener los datos");
+      setLoading(false);
+    });
+  }, [id]);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    axios.put(`http://localhost/tipos_propiedad/${id}`, { nombre })
+      .then(response => {
+        setMessage(response.data.message || "Tipo propiedad actualizada con éxito");
+      })
+      .catch(error => {
+        setMessage(error.response?.data?.message || "Hubo un error al actualizar los datos");
+      });
   };
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
 
   return (
     <div>
       <HeaderComponent />
       <NavBarComponent />
-      <div className='formulario'>
-        <h1>Editar Tipo de Propiedad</h1>
+      <div className="container">
+        <h2>Editar Tipo Propiedad</h2>
+        {message && <div className="alert alert-info">{message}</div>}
         <form onSubmit={handleSubmit}>
-          <div>
+          <div className="form-group">
             <label htmlFor="nombre">Nombre:</label>
             <input
               type="text"
               id="nombre"
+              className="form-control"
               value={nombre}
-              onChange={handleInputChange}
+              onChange={(e) => setNombre(e.target.value)}
+              required
             />
           </div>
-          <button type="submit">Actualizar</button>
+          <button type="submit" className="btn btn-primary">Guardar Cambios</button>
         </form>
-        {mensaje && <p className="mensaje">{mensaje}</p>}
       </div>
       <FooterComponent />
     </div>
   );
-};
+}
 
 export default EditTipoPropiedad;

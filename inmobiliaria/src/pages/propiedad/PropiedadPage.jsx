@@ -42,7 +42,12 @@ const PropiedadPage = () => {
         {loading ? (
         <div>Cargando propiedades...</div>
       ) :(*/}
-        <ListarComponent elementos={elementos} esProp={esProp}/>
+        <ListarComponent
+          elementos={elementos} esProp={esProp}
+          linkEdit="/propiedad/editPropiedad"
+          linkDelete="http://localhost/propiedades"
+          setElementos={setPropiedades}
+        />
       </div>
       <FooterComponent />
     </div>

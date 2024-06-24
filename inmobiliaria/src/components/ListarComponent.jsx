@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
-import DeleteButton from './DeleteButton'; // Asegúrate de ajustar la ruta según la ubicación del archivo
+import DeleteButton from './DeleteButton';
+import EditButton from './EditButton';
 import "../assets/styles/ListarComponent.css";
 
 const ListarComponent = (props) => {
-  const navigate = useNavigate();
   const [mensaje, setMensaje] = useState('');
 
-  const navigateToEditTipoPropiedad = () => {
-    navigate(props.linkEdit);
-  };
-
   const elementos = props.elementos;
-  const esProp=props.esProp;
   return (
     <div className="list-container">
       {elementos.map((elemento, index) => (
@@ -24,9 +18,12 @@ const ListarComponent = (props) => {
               </div>
             )
           ))}
-          <button onClick={() => navigateToEditTipoPropiedad()}>Editar</button>
+          <EditButton
+            linkEdit={props.linkEdit}
+            id={elemento.id}
+          />
           <DeleteButton
-            endpoint="http://localhost/tipos_propiedad"
+            endpoint={props.linkDelete}
             id={elemento.id}
             setMensaje={setMensaje}
             setElementos={props.setElementos}
