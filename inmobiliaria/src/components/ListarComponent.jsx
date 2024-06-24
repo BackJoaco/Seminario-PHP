@@ -10,7 +10,9 @@ const ListarComponent = (props) => {
   const navigateToEditTipoPropiedad = () => {
     navigate(props.linkEdit);
   };
-
+  const navigateToDetailPropiedad =(id) =>{
+    navigate(`/propiedades/detailPropiedad/${id}`); //Detalle Propiedad
+  };
   const elementos = props.elementos;
   const esProp=props.esProp;
   return (
@@ -23,7 +25,8 @@ const ListarComponent = (props) => {
                 <strong>{key}:</strong> {elemento[key]}
               </div>
             )
-          ))}
+          ))} 
+          {esProp && <button onClick={()=> navigateToDetailPropiedad(elemento.id)}> Ver Propiedad en Detalle</button>}
           <button onClick={() => navigateToEditTipoPropiedad()}>Editar</button>
           <DeleteButton
             endpoint="http://localhost/tipos_propiedad"

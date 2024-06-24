@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import '../../assets/styles/DetailPropiedad.css'
 import HeaderComponent from '../../components/HeaderComponent';
 import NavBarComponent from '../../components/NavBarComponent';
+import FooterComponent from '../../components/FooterComponent';
 const PropertyDetail = () => {
   const { id } = useParams();
   const [propiedad, setPropiedad] = useState(null);
@@ -44,6 +45,7 @@ const PropertyDetail = () => {
           <div>{propiedad[key]}</div>
         )
       )}
+      <FooterComponent/>
     </div>
   )
 )}
