@@ -1,96 +1,75 @@
-{/*import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const FiltroPropiedades = ({ onFilterChange }) => {
+const FilterForm = ({ onFilterChange }) => {
+  const [disponible, setDisponible] = useState(false);
+  const [localidad_id, setLocalidad] = useState('');
+  const [fecha_inicio_disponibilidad, setFechaInicio] = useState('');
+  const [cantidad_huespedes, setCantidadHuespedes] = useState('');
   const [localidades, setLocalidades] = useState([]);
-  const [filtro, setFiltro] = useState({
-    disponible: false,
-    localidad: '',
-    fechaInicio: '',
-    cantidadHuespedes: 1,
-  });
 
   useEffect(() => {
-     axios.get('http://localhost/localidades')
+    // Fetch localidades from the server
+    axios.get('http://localhost/localidades')
       .then(response => {
         setLocalidades(response.data.data);
       })
       .catch(error => {
-       console.error('Error fetching localidades:', error);
+        console.error('Error fetching localidades:', error);
       });
   }, []);
 
-  const handleChange = (event) => {
-    const { name, value, type, checked } = event.target;
-    setFiltro(prevFiltro => ({
-      ...prevFiltro,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
-    onFilterChange(filtro);
+    onFilterChange({ disponible, localidad_id, fecha_inicio_disponibilidad, cantidad_huespedes });
   };
 
   return (
-    <div className="filter-properties">
-      <h2>Filtrar Propiedades</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Disponible:
-            <input
-              type="checkbox"
-              name="disponible"
-              checked={filtro.disponible}
-              onChange={handleChange}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Localidad:
-            <select
-              name="localidad"
-              value={filtro.localidad}
-              onChange={handleChange}
-            >
-              <option value="">Seleccionar Localidad</option>
-              {/*{Object.keys(localidades).map((key) => (
-                <option key={localidad.id} value={localidad.nombre}></option>
-              ))}
-            </select>
-          </label>
-        </div>
-        <div>
-          <label>
-            Fecha de inicio:
-            <input
-              type="date"
-              name="fechaInicio"
-              value={filtro.fechaInicio}
-              onChange={handleChange}
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Cantidad de huéspedes:
-            <input
-              type="number"
-              name="cantidadHuespedes"
-              value={filtro.cantidadHuespedes}
-              onChange={handleChange}
-              min="1"
-            />
-          </label>
-        </div>
-        <button type="submit">Aplicar</button>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>
+          Disponible:
+          <input
+            type="checkbox"
+            checked={disponible}
+            onChange={(e) => setDisponible(e.target.checked)}
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          Localidad:
+          <select value={localidad_id} onChange={(e) => setLocalidad(e.target.value)}>
+            <option value="">Seleccione una localidad</option>
+            {localidades.map((loc) => (
+              <option key={loc.id} value={loc.id}>{loc.nombre}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <div>
+        <label>
+          Fecha de inicio:
+          <input
+            type="date"
+            value={fecha_inicio_disponibilidad}
+            onChange={(e) => setFechaInicio(e.target.value)}
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          Cantidad de huéspedes:
+          <input
+            type="number"
+            value={cantidad_huespedes}
+            onChange={(e) => setCantidadHuespedes(e.target.value)}
+          />
+        </label>
+      </div>
+      <button type="submit">Aplicar Filtros</button>
+    </form>
   );
 };
 
-export default FiltroPropiedades;
-*/}
+export default FilterForm;

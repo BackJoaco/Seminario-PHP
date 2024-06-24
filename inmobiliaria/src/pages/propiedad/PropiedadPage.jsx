@@ -1,53 +1,92 @@
-import React, { useEffect, useState } from "react";
-import HeaderComponent from "../../components/HeaderComponent";
-import FooterComponent from "../../components/FooterComponent";
-import NavBarComponent from "../../components/NavBarComponent";
-import ListarComponent from "../../components/ListarComponent";
-import axios from "axios";
-import "../../assets/styles/ListarComponent.css";
-import "../../assets/styles/PropiedadPage.css";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import ListarComponent from '../../components/ListarComponent';
+import FiltroPropiedades from '../../utils/FiltroPropiedades';
+import HeaderComponent from '../../components/HeaderComponent';
+import FooterComponent from '../../components/FooterComponent';
+import NavBarComponent from '../../components/NavBarComponent';
 import { useNavigate } from 'react-router-dom';
+
 const PropiedadPage = () => {
   const [propiedades, setPropiedades] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    disponible: '',
+    localidad_id: '',
+    fecha_inicio_disponibilidad: '',
+    cantidad_huespedes: ''
+  });
   const navigate = useNavigate();
-  {/*const buscarPropiedades=(filtro)=>{
-    const url = 'http://localhost/propiedades';
-    axios.get(url, { params: filtro })*/}
-    useEffect(()=>{
-    axios.get('http://localhost/propiedades')
-      .then(response => {
-        setPropiedades(response.data.data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error Fetching', error);
-        setLoading(false);
-      });
-  }, []);
+
+  useEffect(() => {
+    fetchPropiedades();
+  }, [filters]);
+
+  const fetchPropiedades = async () => {
+    setLoading(true);
+    try {
+      let response;
+
+      // Verifica si hay filtros activos
+      const activeFilters = Object.keys(filters).reduce((acc, key) => {
+        if (filters[key] !== '') {
+          acc[key] = filters[key];
+        }
+        return acc;
+      }, {});
+
+      if (Object.keys(activeFilters).length > 0) {
+        // Si hay filtros activos, agrega los filtros a la solicitud
+        const queryString = new URLSearchParams(activeFilters).toString();
+        response = await axios.get(`http://localhost/propiedades?${queryString}`);
+      } else {
+        // Si no hay filtros activos, realiza la solicitud sin filtros
+        response = await axios.get('http://localhost/propiedades');
+      }
+
+      setPropiedades(response.data.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching propiedades:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+
   const navigateToNewPropiedad = () => {
     navigate('/propiedades/newPropiedad');
   };
-  let esProp=true;
-  const elementos=propiedades.map(propiedad=>({id:propiedad.id,domicilio:propiedad.domicilio,ciudad:propiedad.ciudad,tipoPropiedad:propiedad.tipoPropiedad,fecha_inicio_disponibilidad:propiedad.fecha_inicio_disponibilidad,cantidad_huespedes:propiedad.cantidad_huespedes,valor_noche:propiedad.valor_noche}));
+
+  const elementos = propiedades.map(propiedad => ({
+    id: propiedad.id,
+    domicilio: propiedad.domicilio,
+    ciudad: propiedad.ciudad,
+    tipoPropiedad: propiedad.tipoPropiedad,
+    fecha_inicio_disponibilidad: propiedad.fecha_inicio_disponibilidad,
+    cantidad_huespedes: propiedad.cantidad_huespedes,
+    valor_noche: propiedad.valor_noche
+  }));
+
   return (
     <div>
-    <HeaderComponent />
+      <HeaderComponent />
       <NavBarComponent />
       <div className="main-content">
-      <button onClick={navigateToNewPropiedad} className="boton">
+        <button onClick={navigateToNewPropiedad} className="boton">
           Crear Propiedad
         </button>
-       {/* <FiltroPropiedades onFilterChange={buscarPropiedades} />
+        <FiltroPropiedades onFilterChange={handleFilterChange} />
         {loading ? (
-        <div>Cargando propiedades...</div>
-      ) :(*/}
-        <ListarComponent
-          elementos={elementos} esProp={esProp}
+          <div>Cargando propiedades...</div>
+        ) : (
+          <ListarComponent elementos={elementos} esProp={esProp}
           linkEdit="/propiedad/editPropiedad"
           linkDelete="http://localhost/propiedades"
-          setElementos={setPropiedades}
-        />
+          setElementos={setPropiedades}/>
+        )}
       </div>
       <FooterComponent />
     </div>
