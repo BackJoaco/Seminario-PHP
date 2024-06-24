@@ -19,7 +19,6 @@ const DeleteButton = ({ endpoint, id, setMensaje, setElementos }) => {
         setMensaje('Ha ocurrido un error al eliminar. Por favor, inténtalo de nuevo1.');
       }
     } catch (error) {
-      console.log("hola");
       console.error('Error al eliminar:', error);
       setMensaje('Ha ocurrido un error al eliminar. Por favor, inténtalo de nuevo.');
     }
