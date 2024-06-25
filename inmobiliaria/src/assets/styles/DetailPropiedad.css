@@ -23,7 +23,11 @@
   .list-item div {
     margin-bottom: 5px;
   }
-  .img{
-    width: '100px'; 
-    height: '100px';
+   .propiedad-img {
+    max-width: 60%; 
+    height: auto; 
+    border: 1px solid #ccc;
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 10px; 
   }

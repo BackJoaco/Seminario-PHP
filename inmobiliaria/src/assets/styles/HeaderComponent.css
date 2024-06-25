@@ -3,7 +3,7 @@
   align-items: center;
   padding: 10px;
   background-color: #f8f9fa;
-  position: fixed;
+  position: sticky;
 }
 
 .logo img {

@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `propiedades` (
   `disponible` tinyint(1) NOT NULL,
   `valor_noche` int NOT NULL,
   `tipo_propiedad_id` int NOT NULL,
-  `imagen` text,
+  `imagen` LONGTEXT,
   `tipo_imagen` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_tipo_propiedad` (`tipo_propiedad_id`),

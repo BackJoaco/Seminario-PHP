@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import ListarComponent from '../../components/ListarComponent';
 import FiltroPropiedades from '../../utils/FiltroPropiedades';
 import HeaderComponent from '../../components/HeaderComponent';
-import FooterComponent from '../../components/FooterComponent';
 import NavBarComponent from '../../components/NavBarComponent';
 import { useNavigate } from 'react-router-dom';
+import FooterComponent from '../../components/FooterComponent';
 
 const PropiedadPage = () => {
   const [propiedades, setPropiedades] = useState([]);
@@ -18,16 +18,10 @@ const PropiedadPage = () => {
   });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchPropiedades();
-  }, [filters]);
-
-  const fetchPropiedades = async () => {
+  const fetchPropiedades = useCallback(async () => {
     setLoading(true);
     try {
       let response;
-
-      // Verifica si hay filtros activos
       const activeFilters = Object.keys(filters).reduce((acc, key) => {
         if (filters[key] !== '') {
           acc[key] = filters[key];
@@ -36,11 +30,9 @@ const PropiedadPage = () => {
       }, {});
 
       if (Object.keys(activeFilters).length > 0) {
-        // Si hay filtros activos, agrega los filtros a la solicitud
         const queryString = new URLSearchParams(activeFilters).toString();
         response = await axios.get(`http://localhost/propiedades?${queryString}`);
       } else {
-        // Si no hay filtros activos, realiza la solicitud sin filtros
         response = await axios.get('http://localhost/propiedades');
       }
 
@@ -50,7 +42,11 @@ const PropiedadPage = () => {
       console.error('Error fetching propiedades:', error);
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    fetchPropiedades();
+  }, [fetchPropiedades]);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
@@ -69,12 +65,14 @@ const PropiedadPage = () => {
     cantidad_huespedes: propiedad.cantidad_huespedes,
     valor_noche: propiedad.valor_noche
   }));
- let esProp=true;
+
+  const esProp = true;
+
   return (
     <div>
       <HeaderComponent />
       <NavBarComponent />
-      <div className="main-content">
+      <main className="main-content">
         <button onClick={navigateToNewPropiedad} className="boton">
           Crear Propiedad
         </button>
@@ -82,12 +80,15 @@ const PropiedadPage = () => {
         {loading ? (
           <div>Cargando propiedades...</div>
         ) : (
-          <ListarComponent elementos={elementos} esProp={esProp}
-          linkEdit="/propiedad/editPropiedad"
-          linkDelete="http://localhost/propiedades"
-          setElementos={setPropiedades}/>
+          <ListarComponent 
+            elementos={elementos} 
+            esProp={esProp}
+            linkEdit="/propiedad/editPropiedad"
+            linkDelete="http://localhost/propiedades"
+            setElementos={setPropiedades}
+          />
         )}
-      </div>
+      </main>
       <FooterComponent />
     </div>
   );

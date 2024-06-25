@@ -172,7 +172,7 @@ $app->get('/', function(Request $request,Response $response,$args){
             $sql="SELECT * FROM propiedades WHERE tipo_propiedad_id=$buscarId";
             $query=$conexion->query($sql);
             if($query->rowCount()>0){
-                $vector['errorPropiedad']='Hay una propiedad asociada a este tipo de id';
+                $vector['errorPropiedad']='Hay una propiedad asociada a este tipo de propiedad';
             }
             if(!$vector){
              $sql="DELETE FROM tipo_propiedades WHERE id=$buscarId";
@@ -212,7 +212,7 @@ $app->get('/', function(Request $request,Response $response,$args){
             $payload=json_encode([
                 'status' => 'success',
                 'code' => 500,
-                'errors'=>$e->getMessage()
+                'error'=>$e->getMessage()
             ]);
             $response->getBody()->write($payload);
             return $response->withHeader('Content-Type','application/json')->withStatus(500);
@@ -665,8 +665,8 @@ $app->get('/', function(Request $request,Response $response,$args){
                         $firstFilter = false;
                         break;
                     case 'fecha_inicio_disponibilidad':
-                        $consulta .= $firstFilter ? " AND Prop.fecha_inicio_disponibilidad >= ?" : " AND Prop.fecha_inicio_disponibilidad >= ?";
-                        $bindings[] = $value; // Asegúrate de que $value sea una fecha válida en el formato adecuado
+                        $consulta .= $firstFilter ? " AND Prop.fecha_inicio_disponibilidad = ?" : " AND Prop.fecha_inicio_disponibilidad = ?";
+                        $bindings[] = $value; 
                         $firstFilter = false;
                         break;
                     case 'cantidad_huespedes':
@@ -674,7 +674,7 @@ $app->get('/', function(Request $request,Response $response,$args){
                         $bindings[] = intval($value);
                         $firstFilter = false;
                         break;
-                    // Añadir más casos según los filtros que esperas manejar
+
                 }
             }
     
@@ -710,7 +710,7 @@ $app->get('/', function(Request $request,Response $response,$args){
         $query=$conexion->query($sql);
         $tipos=$query->fetch(PDO::FETCH_ASSOC);
         if(!$tipos){
-            $response->getBody()->write(json_encode(['status'=>'error','code'=>404,'error Id'=>'No existe una propiedad asociada a ese id']));
+            $response->getBody()->write(json_encode(['status'=>'error','code'=>404,'error'=>'No existe una propiedad asociada a ese id']));
             return $response->withStatus(404);   
         }
         else{
@@ -781,6 +781,9 @@ $app->get('/', function(Request $request,Response $response,$args){
                 return $response->withHeader('Content-Type','application/json')->withStatus(400);
             } 
             else{
+                if(isset($imagen)){
+                    $tipo_imagen = pathinfo($filename, PATHINFO_EXTENSION);
+                }
              $sql="INSERT INTO propiedades (domicilio,localidad_id,cantidad_habitaciones,cantidad_banios,cochera,cantidad_huespedes,fecha_inicio_disponibilidad,cantidad_dias,disponible,valor_noche,tipo_propiedad_id,imagen,tipo_imagen) VALUES (:domicilio,:localidad_id,:cantidad_habitaciones,:cantidad_banios,:cochera,:cantidad_huespedes,:fecha_inicio_disponibilidad,:cantidad_dias,:disponible,:valor_noche,:tipo_propiedad_id,:imagen,:tipo_imagen)";
              $query=$conexion->prepare($sql);
              $query->bindValue(':domicilio',$data['domicilio']);
@@ -994,6 +997,37 @@ $app->get('/', function(Request $request,Response $response,$args){
             return $response->withHeader('Content-Type','application/json')->withStatus(400);
         } 
     }); 
+    $app->get('/reservas/{id}', function(Request $request,Response $response,array $args){
+        $buscarId=$args['id'];
+        try{
+         $conexion=getConnection();
+         $sql= "SELECT * FROM reservas WHERE id=$buscarId";
+         $query=$conexion->query($sql);
+         $tipos=$query->fetch(PDO::FETCH_ASSOC);
+         if(!$tipos){
+             $response->getBody()->write(json_encode(['status'=>'error','code'=>404,'error'=>'No existe una reserva asociada a ese id']));
+             return $response->withStatus(404);   
+         }
+         else{
+             $payload = json_encode([
+                 'status' => 'success',
+                 'code' => 200,
+                 'data' => $tipos
+             ]);
+             $response->getBody()->write($payload);
+             return $response->withHeader('Content-Type','application/json')->withStatus(200);
+         }
+         } catch(PDOException $e){
+             $payload=json_encode([
+                 'status' => 'error',
+                 'code' => 500,
+                 'error'=>$e->getMessage()
+             ]);
+             $response->getBody()->write($payload);
+             return $response->withHeader('Content-Type','application/json')->withStatus(500);
+         } 
+     
+    });
     $app->post('/reservas',function(Request $request,Response $response,){
         $data=$request->getParsedBody();
         $vector=array();

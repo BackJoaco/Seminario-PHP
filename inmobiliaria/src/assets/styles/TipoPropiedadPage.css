@@ -3,3 +3,13 @@
   margin-left: 220px; /* Ajusta según el ancho de tu navbar */
   margin-bottom: 100px; /* Ajusta según la altura de tu footer */
 }
+.boton{
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}

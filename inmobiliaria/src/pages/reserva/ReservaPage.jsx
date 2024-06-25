@@ -27,7 +27,7 @@ const ReservaPage = () => {
     <HeaderComponent />
       <NavBarComponent />
       <div className="main-content">
-        <boton onClick={navigateToNewReserva} className="boton">Crear Nueva Reserva</boton>
+        <button onClick={navigateToNewReserva} className="boton">Crear Nueva Reserva</button>
         <ListarComponent 
           elementos={elementos}
           linkEdit="/reserva/editReserva"

@@ -54,6 +54,7 @@
   color: white;
   padding: 10px 20px;
   width: 100%;
+  position:sticky;
 }
 
 .main {
@@ -68,4 +69,5 @@
   padding: 10px 20px;
   width: 100%;
   text-align: center;
+  position:sticky;
 }

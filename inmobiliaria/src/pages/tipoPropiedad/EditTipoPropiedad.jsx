@@ -15,7 +15,7 @@ const EditTipoPropiedad = () => {
   useEffect(() => {
     axios.get('http://localhost/tipos_propiedad')
     .then(response => {
-      const tipoPropiedad = response.data.find(item => item.id === parseInt(id));
+      const tipoPropiedad = response.data.data.find(item => item.id === parseInt(id));
       if (tipoPropiedad) {
         setNombre(tipoPropiedad.nombre);
       } else {
@@ -36,7 +36,19 @@ const EditTipoPropiedad = () => {
         setMessage(response.data.message || "Tipo propiedad actualizada con éxito");
       })
       .catch(error => {
-        setMessage(error.response?.data?.message || "Hubo un error al actualizar los datos");
+        console.log(error);
+        const errors = error.response?.data?.error;
+        let errorMessage = 'Ha ocurrido un error';
+        if (errors) {
+          errorMessage = '';
+          for (const key in errors) {
+            if (errors.hasOwnProperty(key)) {
+              errorMessage += errors[key] + '. ';
+            }
+          }
+        }
+        console.log('Error message:', errorMessage);
+        setMessage(errorMessage.trim()||"Hubo un error al actualizar los datos" );
       });
   };
 

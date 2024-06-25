@@ -3,14 +3,14 @@ import HeaderComponent from "../../components/HeaderComponent";
 import FooterComponent from "../../components/FooterComponent";
 import NavBarComponent from "../../components/NavBarComponent";
 import axios from "axios";
-
-
-const EditReserva = ({ id }) => {
+import { useParams } from 'react-router-dom';
+const EditReserva = () => {
+  const { id } = useParams();
   const [reserva, setReserva] = useState({
     propiedad_id: '',
     inquilino_id: '',
     fecha_desde: '',
-    cantidad_noches: 0
+    cantidad_noches: ''
   });
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
@@ -18,53 +18,69 @@ const EditReserva = ({ id }) => {
   const [inquilinos, setInquilinos] = useState([]);
 
   useEffect(() => {
-    // Fetch propiedades
-    axios.get('http://localhost/propiedades')
-      .then(response => {
-        setPropiedades(response.data.data.map(propiedad => ({ value: propiedad.id, label: propiedad.domicilio })));
-      })
-      .catch(error => {
-        console.error('Error Fetching Propiedades', error);
-      });
+    const fetchData = async () => {
+      try {
+        // Fetch propiedades
+        const propiedadesResponse = await axios.get('http://localhost/propiedades');
+        setPropiedades(propiedadesResponse.data.data.map(propiedad => ({ value: propiedad.id, label: propiedad.domicilio })));
 
-    // Fetch inquilinos
-    axios.get('http://localhost/inquilinos')
-      .then(response => {
-        setInquilinos(response.data.data.map(inquilino => ({ value: inquilino.id, label: inquilino.nombre })));
-      })
-      .catch(error => {
-        console.error('Error Fetching Inquilinos', error);
-      });
+        // Fetch inquilinos
+        const inquilinosResponse = await axios.get('http://localhost/inquilinos');
+        setInquilinos(inquilinosResponse.data.data.map(inquilino => ({ value: inquilino.id, label: inquilino.nombre })));
 
-    // If editing an existing reserva (id provided), fetch reserva details
-    if (id) {
-      axios.get(`http://localhost/reservas/${id}`)
-        .then(response => {
-          setReserva(response.data);
-          setLoading(false);
-        })
-        .catch(error => {
-          setMessage(error.response?.data?.message || "Hubo un error al obtener los datos de la reserva");
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
+        // If editing an existing reserva (id provided), fetch reserva details
+        if (id) {
+          const reservaResponse = await axios.get(`http://localhost/reservas/${id}`);
+          setReserva(reservaResponse.data.data);
+          console.log(reservaResponse);
+        }
+      } catch (error) {
+        console.log(error);
+      const errors = error.response?.data?.error;
+      let errorMensaje = 'Ha ocurrido un error';
+      if (errors) {
+        errorMensaje = '';
+        for (const key in errors) {
+          if (errors.hasOwnProperty(key)) {
+            errorMensaje += errors[key] + '. ';
+          }
+        }
+      }
+      console.log('Error message:', errorMensaje);
+        const errorMessage = errorMensaje|| "Hubo un error al obtener los datos";
+        setMessage(errorMessage.trim());
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [id]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    const apiUrl = id ? `http://localhost/reservas/${id}` : 'http://localhost/reservas'; // Determine API URL based on whether ID is present
+    const apiUrl =  `http://localhost/reservas/${id}`;
 
-    const axiosMethod = id ? axios.put : axios.post; // Use PUT for update, POST for create
-
-    axiosMethod(apiUrl, reserva)
-      .then(response => {
-        setMessage(response.data.actualizacion || "Reserva guardada con éxito");
-      })
-      .catch(error => {
-        setMessage(error.response?.data?.error || "Hubo un error al guardar la reserva");
-      });
+    try {
+      const axiosMethod = axios.put 
+      const response = await axiosMethod(apiUrl, reserva);
+      setMessage(response.data.actualizacion || "Reserva guardada con éxito");
+    } catch (error) {
+      console.log(error);
+      const errors = error.response?.data?.error;
+      let errorMensaje = 'Ha ocurrido un error';
+      if (errors) {
+        errorMensaje = '';
+        for (const key in errors) {
+          if (errors.hasOwnProperty(key)) {
+            errorMensaje += errors[key] + '. ';
+          }
+        }
+      }
+      console.log('Error message:', errorMensaje);
+        const errorMessage = errorMensaje|| "Hubo un error al guardar la reserva";
+        setMessage(errorMessage.trim());
+    }
   };
 
   const handleChange = (event) => {
@@ -84,7 +100,7 @@ const EditReserva = ({ id }) => {
       <HeaderComponent />
       <NavBarComponent />
       <div className="container">
-        <h2>{id ? 'Editar Reserva' : 'Crear Nueva Reserva'}</h2>
+        <h2> Editar Reserva </h2>
         {message && <div className="alert alert-info">{message}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -149,6 +165,6 @@ const EditReserva = ({ id }) => {
       <FooterComponent />
     </div>
   );
-}
+};
 
 export default EditReserva;

@@ -1,7 +1,7 @@
 # Para este proyecto se utilizó la bibilioteca axios
  Utilizada para hacer solicitudes HTTP desde el navegador y Node.js, de una manera sencilla se realizan solicitudes a servidores, manejar respuestas, y gestionar errores.
 
-
+# seminario.sql text LONGTEXT para almacenar mas imagenes mas pesadas
 
 
 

@@ -55,4 +55,7 @@
     background-color: #d4edda;
     color: #155724;
   }
-  
+  .propiedad-img{
+   max-width: '200px'; 
+   margin-top: '10px';
+  }

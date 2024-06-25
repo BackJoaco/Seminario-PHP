@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import "../assets/styles/FiltrarPropiedades.css";
 const FilterForm = ({ onFilterChange }) => {
   const [disponible, setDisponible] = useState(false);
   const [localidad_id, setLocalidad] = useState('');
@@ -25,7 +25,7 @@ const FilterForm = ({ onFilterChange }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className='formulario'>
       <div>
         <label>
           Disponible:

@@ -18,7 +18,9 @@ const NewTipoPropiedad = () => (
       fields={camposTipoPropiedad} 
       title="Crear Nuevo Tipo de Propiedad" 
     />
+   <footer>
     <FooterComponent/>
+  </footer>
   </div>
 );
 

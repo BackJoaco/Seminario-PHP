@@ -42,7 +42,7 @@
 
 /* Ajuste para evitar superposición con el Header */
 .header {
-  position: relative;
+  position: sticky;
   z-index: 200; /* Asegura que el Header esté por encima del Navbar */
   background-color: #f8f9fa;
   padding: 10px;
